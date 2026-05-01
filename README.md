@@ -93,7 +93,7 @@ Update-Database
 <img src="FinanzasPagos_Crud/Imagenes/listado_pago.png" width="700" alt="Listado de Pagos"/>
 
 ### Detalle de Pagos
-<img src="FinanzasPagos_Crud/Imagenes/detalle_pago.png" width="700" alt="Detalle de Pagos"/>
+<img src="FinanzasPagos_Crud/Imagenes/Detalle_pago.png" width="700" alt="Detalle de Pagos"/>
 
 ### Buscador por Estado
 <img src="FinanzasPagos_Crud/Imagenes/buscar_estado.png" width="700" alt="Buscador por Estado"/>
