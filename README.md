@@ -90,21 +90,21 @@ Update-Database
 ## Pagos
 
 ### Listado de Pagos
-<img src="imagenes/listado_pago.png" width="700" alt="Listado de Pagos"/>
+<img src="Imagenes/listado_pago.png" width="700" alt="Listado de Pagos"/>
 
 ### Detalle de Pagos
-<img src="imagenes/detalle_pago.png" width="700" alt="Detalle de Pagos"/>
+<img src="Imagenes/detalle_pago.png" width="700" alt="Detalle de Pagos"/>
 
 ### Buscador por Estado
-<img src="imagenes/buscar_estado.png" width="700" alt="Buscador por Estado"/>
+<img src="Imagenes/buscar_estado.png" width="700" alt="Buscador por Estado"/>
 
 ### Eliminar Pago
-<img src="imagenes/eliminar_pago.png" width="700" alt="Eliminar Pago"/>
+<img src="Imagenes/eliminar_pago.png" width="700" alt="Eliminar Pago"/>
 
 ## Gastos
 
 ### Listado de Gastos
-<img src="imagenes/listado_gastos.png" width="700" alt="Listado de Gastos"/>
+<img src="Imagenes/listado_gastos.png" width="700" alt="Listado de Gastos"/>
 
 ### Editar Gasto
-<img src="imagenes/editar_gasto.png" width="700" alt="Editar Gasto"/>
+<img src="Imagenes/editar_gasto.png" width="700" alt="Editar Gasto"/>
