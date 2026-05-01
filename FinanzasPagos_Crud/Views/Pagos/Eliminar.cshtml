@@ -1,0 +1,55 @@
+﻿@model FinanzasPagos_Crud.Models.Pago
+@using FinanzasPagos_Crud.Models
+@{
+    ViewData["Title"] = "Eliminar Pago #" + Model.Id;
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">🗑 Eliminar Pago</h1>
+        <p class="page-subtitle">Confirma la eliminación del registro</p>
+    </div>
+    <a asp-action="Index" class="btn-fp-ghost">← Volver</a>
+</div>
+
+<div style="display:flex;justify-content:center">
+    <div class="fp-card accent-eliminar" style="width:100%;max-width:480px">
+        <div class="fp-card-header">
+            <span class="fp-card-icon">⚠️</span>
+            <h2>¿Eliminar este pago?</h2>
+        </div>
+        <div class="fp-detalle" style="margin-top:1.2rem">
+            <div class="fp-detalle-row">
+                <span class="fp-detalle-key">ID</span>
+                <span class="fp-detalle-val">#@Model.Id</span>
+            </div>
+            <div class="fp-detalle-row">
+                <span class="fp-detalle-key">Monto</span>
+                <span class="fp-detalle-val monto">S/. @Model.Monto.ToString("N2")</span>
+            </div>
+            <div class="fp-detalle-row">
+                <span class="fp-detalle-key">Estado</span>
+                <span class="fp-detalle-val">
+                    @if (Model.Estado == EstadoPago.Aprobado)
+                    {
+                        <span class="fp-badge fp-badge-aprobado">✔ Aprobado</span>
+                    }
+                    else
+                    {
+                        <span class="fp-badge fp-badge-pendiente">⏳ Pendiente</span>
+                    }
+                </span>
+            </div>
+        </div>
+        <div class="fp-danger-box">
+            ⚠️ Esta acción es <strong>permanente</strong> y no se puede deshacer.
+        </div>
+        <form asp-action="Eliminar" method="post">
+            @Html.AntiForgeryToken()
+            <div class="fp-form-actions">
+                <a asp-action="Index" class="btn-fp-ghost">Cancelar</a>
+                <button type="submit" class="btn-fp-danger">🗑 Sí, eliminar</button>
+            </div>
+        </form>
+    </div>
+</div>

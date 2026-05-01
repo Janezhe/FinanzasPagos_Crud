@@ -1,0 +1,743 @@
+﻿@model FinanzasPagos_Crud.Models.PagoGastoViewModel
+@using FinanzasPagos_Crud.Models
+@{
+    ViewData["Title"] = "Pagos";
+}
+
+<style>
+:root {
+  --fin-navy:    #004481;
+  --fin-blue:    #1464A5;
+  --fin-light:   #2DCCCD;
+  --fin-bg:      #F4F6F9;
+  --fin-white:   #FFFFFF;
+  --fin-card:    #FFFFFF;
+  --fin-border:  #D9E1EC;
+  --fin-text:    #1B2C4B;
+  --fin-muted:   #6B7E9A;
+  --fin-green:   #00A651;
+  --fin-red:     #DA3851;
+  --fin-gray:    #8592A3;
+  --fin-pend-bg: #FFF8E6;
+  --fin-pend-cl: #B07A00;
+  --fin-apro-bg: #E6F7EE;
+  --fin-apro-cl: #007A3D;
+  --r: 10px;
+}
+
+body { background: var(--fin-bg) !important; color: var(--fin-text) !important; }
+.navbar { background: var(--fin-navy) !important; border: none !important; }
+.navbar-brand, .nav-link { color: #fff !important; }
+footer { background: var(--fin-white) !important; border-color: var(--fin-border) !important; color: var(--fin-muted) !important; }
+footer a { color: var(--fin-muted) !important; }
+
+.fin-header {
+  display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap;
+  gap: 1rem; margin-bottom: 1.4rem; margin-top: .5rem;
+  background: linear-gradient(135deg, #003B7A 0%, #1464A5 60%, #2DCCCD 100%);
+  border-radius: 14px; padding: 1.2rem 1.6rem;
+  box-shadow: 0 4px 18px rgba(0,68,129,.18);
+}
+.fin-title { font-size: 1.35rem; font-weight: 700; color: #fff; margin: 0; }
+.fin-sub   { color: rgba(255,255,255,.75); font-size: .84rem; margin: .15rem 0 0; }
+
+.fin-alert {
+  background: #E6F7EE; border-left: 4px solid var(--fin-green);
+  color: #005C2E; border-radius: var(--r);
+  padding: .75rem 1rem; margin-bottom: 1rem; font-size: .88rem;
+}
+
+.fin-search-wrap {
+  margin-bottom: 1rem; display: flex; gap: .65rem; align-items: center; flex-wrap: wrap;
+}
+
+.fin-card {
+  background: var(--fin-card);
+  border: 1px solid var(--fin-border);
+  border-radius: var(--r);
+  box-shadow: 0 2px 12px rgba(0,68,129,.07);
+  overflow: hidden;
+}
+
+.fin-table { width: 100%; border-collapse: collapse; }
+.fin-table thead tr { background: #EEF3FB; }
+.fin-table th {
+  padding: .7rem 1rem; text-align: left;
+  font-size: .72rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .07em;
+  color: var(--fin-muted); border-bottom: 1px solid var(--fin-border);
+}
+.fin-table td {
+  padding: .85rem 1rem; border-bottom: 1px solid var(--fin-border);
+  font-size: .9rem; color: var(--fin-text); vertical-align: middle;
+}
+.fin-table tbody tr:last-child td { border-bottom: none; }
+.fin-table tbody tr:hover { background: #F8FAFD; }
+
+.td-id    { color: var(--fin-muted); font-size: .82rem; font-family: monospace; }
+.td-monto { font-weight: 700; color: var(--fin-navy); font-size: .98rem; }
+.td-fecha { color: var(--fin-muted); font-size: .82rem; }
+.td-acc   { text-align: right; white-space: nowrap; }
+
+.badge-pend {
+  display: inline-flex; align-items: center;
+  padding: .25rem .75rem; border-radius: 999px; font-size: .76rem; font-weight: 600;
+  background: var(--fin-pend-bg); color: var(--fin-pend-cl);
+  border: 1px solid #F0D070;
+}
+.badge-apro {
+  display: inline-flex; align-items: center;
+  padding: .25rem .75rem; border-radius: 999px; font-size: .76rem; font-weight: 600;
+  background: var(--fin-apro-bg); color: var(--fin-apro-cl);
+  border: 1px solid #70C98A;
+}
+
+.btn-tbl {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 28px; padding: 0 .7rem; border-radius: 6px;
+  border: 1.5px solid var(--fin-border); background: var(--fin-white);
+  cursor: pointer; font-size: .75rem; font-weight: 600;
+  margin-left: 4px; transition: all .15s; color: var(--fin-navy);
+  border-color: #BDD0E8; white-space: nowrap;
+}
+.btn-tbl:hover { background: #EEF3FB; border-color: var(--fin-navy); }
+
+.fin-stats {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
+  gap: .75rem; padding: 1rem; background: #F8FAFD;
+  border-top: 1px solid var(--fin-border);
+}
+.fin-stat {
+  background: var(--fin-white); border: 1px solid var(--fin-border);
+  border-radius: var(--r); padding: .85rem 1rem;
+}
+.fin-stat-lbl { font-size: .68rem; font-weight: 700; text-transform: uppercase;
+                 letter-spacing: .06em; color: var(--fin-muted); }
+.fin-stat-val { font-size: 1.4rem; font-weight: 700; margin-top: .12rem; }
+.s-total .fin-stat-val { color: var(--fin-navy); }
+.s-pend  .fin-stat-val { color: var(--fin-pend-cl); }
+.s-apro  .fin-stat-val { color: var(--fin-apro-cl); }
+.s-monto .fin-stat-val { color: var(--fin-blue); }
+
+.btn-agregar {
+  background: rgba(255,255,255,.18); color: #fff;
+  border: 1.5px solid rgba(255,255,255,.45);
+  border-radius: var(--r); padding: .55rem 1.3rem;
+  font-size: .88rem; font-weight: 700; cursor: pointer;
+  transition: all .18s; letter-spacing: .01em;
+  backdrop-filter: blur(4px);
+}
+.btn-agregar:hover { background: rgba(255,255,255,.28); border-color: rgba(255,255,255,.7); }
+
+.m-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(27,44,75,.5); z-index: 2000;
+  align-items: center; justify-content: center;
+}
+.m-overlay.open { display: flex; }
+.m-box {
+  background: var(--fin-white); border: 1px solid var(--fin-border);
+  border-radius: 14px; width: 100%; max-width: 400px; margin: 1rem;
+  box-shadow: 0 16px 48px rgba(0,68,129,.18);
+  animation: pop .2s ease;
+}
+@@keyframes pop {
+  from { transform: scale(.96); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+.m-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 1.2rem; border-bottom: 1px solid var(--fin-border);
+  background: #F4F6F9; border-radius: 14px 14px 0 0;
+}
+.m-head h3 { margin: 0; font-size: .95rem; font-weight: 700; color: var(--fin-navy); }
+.m-x {
+  background: none; border: none; color: var(--fin-muted);
+  font-size: 1rem; cursor: pointer; padding: .2rem .5rem;
+  border-radius: 6px; line-height: 1;
+}
+.m-x:hover { background: var(--fin-border); }
+.m-body { padding: 1.2rem; display: flex; flex-direction: column; gap: 1rem; }
+.m-foot {
+  display: flex; gap: .65rem; justify-content: flex-end;
+  padding: .85rem 1.2rem; border-top: 1px solid var(--fin-border);
+}
+.m-lbl {
+  font-size: .72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; color: var(--fin-muted); display: block; margin-bottom: .35rem;
+}
+.m-input {
+  width: 100%; padding: .58rem .85rem;
+  background: var(--fin-white); border: 1.5px solid var(--fin-border);
+  color: var(--fin-text); border-radius: 8px; font-size: .92rem;
+  transition: border-color .18s, box-shadow .18s;
+}
+.m-input:focus {
+  outline: none; border-color: var(--fin-blue);
+  box-shadow: 0 0 0 3px rgba(20,100,165,.12);
+}
+.pfx-row { display: flex; }
+.pfx {
+  background: #EEF3FB; border: 1.5px solid var(--fin-border); border-right: none;
+  padding: .58rem .85rem; border-radius: 8px 0 0 8px;
+  color: var(--fin-muted); font-weight: 700; font-size: .9rem;
+  display: flex; align-items: center;
+}
+.pfx-row .m-input { border-radius: 0 8px 8px 0; }
+
+.est-row { display: flex; gap: .65rem; }
+.est-opt input[type=radio] { display: none; }
+.est-opt label {
+  padding: .45rem 1rem; border-radius: 999px;
+  border: 1.5px solid var(--fin-border); cursor: pointer;
+  font-size: .84rem; font-weight: 600; color: var(--fin-muted);
+  transition: all .18s; display: block;
+}
+.est-pend input:checked + label { color: var(--fin-pend-cl); border-color: #E8B800; background: var(--fin-pend-bg); }
+.est-apro input:checked + label { color: var(--fin-apro-cl); border-color: #00A651; background: var(--fin-apro-bg); }
+
+.d-row { display: flex; border-bottom: 1px solid var(--fin-border); }
+.d-row:last-child { border-bottom: none; }
+.d-key {
+  width: 110px; min-width: 110px; padding: .65rem .9rem;
+  background: #F4F6F9; color: var(--fin-muted);
+  font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .05em;
+  display: flex; align-items: center;
+}
+.d-val { padding: .65rem .9rem; font-size: .9rem; color: var(--fin-text); }
+.d-val.monto { font-weight: 700; color: var(--fin-navy); }
+
+.btn-navy {
+  background: var(--fin-navy); color: #fff; border: none;
+  border-radius: 8px; padding: .52rem 1.1rem;
+  font-size: .86rem; font-weight: 700; cursor: pointer; transition: background .18s;
+}
+.btn-navy:hover { background: var(--fin-blue); }
+.btn-del {
+  background: var(--fin-red); color: #fff; border: none;
+  border-radius: 8px; padding: .52rem 1.1rem;
+  font-size: .86rem; font-weight: 700; cursor: pointer; transition: filter .18s;
+}
+.btn-del:hover { filter: brightness(1.08); }
+.btn-cancel {
+  background: transparent; color: var(--fin-muted);
+  border: 1.5px solid var(--fin-border); border-radius: 8px;
+  padding: .52rem 1.1rem; font-size: .86rem; font-weight: 600;
+  cursor: pointer; transition: all .18s;
+}
+.btn-cancel:hover { border-color: var(--fin-muted); color: var(--fin-text); }
+
+.fin-nav {
+  display: flex; align-items: center; gap: .5rem;
+  background: #fff; border: 1px solid var(--fin-border);
+  border-radius: 12px; padding: .5rem .6rem;
+  margin-bottom: 1.2rem;
+  box-shadow: 0 1px 6px rgba(0,68,129,.06);
+  flex-wrap: wrap;
+}
+.fin-nav-item {
+  display: flex; align-items: center; gap: .45rem;
+  padding: .48rem 1rem; border-radius: 8px;
+  font-size: .84rem; font-weight: 600; cursor: pointer;
+  border: none; background: transparent;
+  color: var(--fin-muted); transition: all .18s;
+  text-decoration: none;
+}
+.fin-nav-item:hover { background: #EEF3FB; color: var(--fin-navy); }
+.fin-nav-item.active { background: var(--fin-navy); color: #fff; }
+.fin-nav-divider {
+  width: 1px; height: 24px; background: var(--fin-border);
+  margin: 0 .25rem; flex-shrink: 0;
+}
+
+/* header dinámico según sección activa */
+#headerTitle, #headerSub { transition: opacity .15s; }
+</style>
+
+<!-- CABECERA -->
+<div class="fin-header">
+    <div>
+        <h1 class="fin-title" id="headerTitle">Gestión de Pagos</h1>
+        <p class="fin-sub" id="headerSub">Administra tus pagos y su estado de aprobación</p>
+    </div>
+    <button onclick="abrirCrear()" class="btn-agregar" id="btnAgregar">Agregar pago</button>
+</div>
+
+@if (TempData["Exito"] != null)
+{
+    <div class="fin-alert">@TempData["Exito"]</div>
+}
+
+<!-- NAVEGACION CATEGORIA -->
+<div class="fin-nav">
+    <button class="fin-nav-item active" onclick="setNav(this,'pagos')">Pagos</button>
+    <div class="fin-nav-divider"></div>
+    <button class="fin-nav-item" onclick="setNav(this,'gastos')">Gastos</button>
+</div>
+
+<!-- BUSCADOR -->
+<div class="fin-search-wrap" id="wrapBuscador" style="display:none">
+    <div style="position:relative;flex:1;max-width:320px">
+        <svg style="position:absolute;left:.75rem;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--fin-muted)" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="buscadorEstado" placeholder="Buscar por estado..."
+               oninput="buscarEstado(this.value)"
+               style="width:100%;padding:.55rem .85rem .55rem 2.3rem;border:1.5px solid var(--fin-border);border-radius:8px;font-size:.88rem;color:var(--fin-text);background:var(--fin-white);outline:none;transition:border-color .18s"
+               onfocus="this.style.borderColor='var(--fin-blue)'"
+               onblur="this.style.borderColor='var(--fin-border)'" />
+    </div>
+    <span id="resultCount" style="font-size:.8rem;color:var(--fin-muted)"></span>
+</div>
+
+<!-- ══ SECCION PAGOS ══ -->
+<div id="seccionPagos">
+    <div class="fin-card">
+        @if (!Model.Pagos.Any())
+        {
+            <div style="padding:3rem;text-align:center;color:var(--fin-muted)">
+                <p style="margin-bottom:1rem">No hay pagos registrados.</p>
+                <button onclick="abrirCrear()" class="btn-agregar" style="background:var(--fin-navy);border-color:var(--fin-navy)">Agregar pago</button>
+            </div>
+        }
+        else
+        {
+            <div style="overflow-x:auto">
+                <table class="fin-table" id="tablaPagos">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th style="text-align:right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in Model.Pagos)
+                        {
+                            <tr data-estado="@p.Estado">
+                                <td class="td-id">@p.Id</td>
+                                <td class="td-monto">S/. @p.Monto.ToString("N2")</td>
+                                <td>
+                                    @if (p.Estado == EstadoPago.Aprobado)
+                                    {
+                                        <span class="badge-apro">Aprobado</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-pend">Pendiente</span>
+                                    }
+                                </td>
+                                <td class="td-fecha">@p.CreadoEn.ToString("dd/MM/yyyy")</td>
+                                <td class="td-acc">
+                                    <button onclick="abrirVerPago(@p.Id,'@p.Monto.ToString(System.Globalization.CultureInfo.InvariantCulture)','@p.Estado','@p.CreadoEn.ToString("dd/MM/yyyy")')" class="btn-tbl">Ver</button>
+                                    <button onclick="abrirEditarPago(@p.Id,@p.Monto.ToString(System.Globalization.CultureInfo.InvariantCulture),'@p.Estado')" class="btn-tbl">Editar</button>
+                                    <button onclick="abrirBorrarPago(@p.Id)" class="btn-tbl">Eliminar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="fin-stats">
+                <div class="fin-stat s-total">
+                    <div class="fin-stat-lbl">Total</div>
+                    <div class="fin-stat-val">@Model.Pagos.Count()</div>
+                </div>
+                <div class="fin-stat s-pend">
+                    <div class="fin-stat-lbl">Pendientes</div>
+                    <div class="fin-stat-val">@Model.Pagos.Count(p => p.Estado == EstadoPago.Pendiente)</div>
+                </div>
+                <div class="fin-stat s-apro">
+                    <div class="fin-stat-lbl">Aprobados</div>
+                    <div class="fin-stat-val">@Model.Pagos.Count(p => p.Estado == EstadoPago.Aprobado)</div>
+                </div>
+                <div class="fin-stat s-monto">
+                    <div class="fin-stat-lbl">Monto total</div>
+                    <div class="fin-stat-val">S/. @Model.Pagos.Sum(p => p.Monto).ToString("N2")</div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ══ SECCION GASTOS ══ -->
+<div id="seccionGastos" style="display:none">
+    <div class="fin-card">
+        @if (!Model.Gastos.Any())
+        {
+            <div style="padding:3rem;text-align:center;color:var(--fin-muted)">
+                <p style="margin-bottom:1rem">No hay gastos registrados.</p>
+                <button onclick="abrirCrearGasto()" class="btn-agregar" style="background:var(--fin-navy);border-color:var(--fin-navy)">Agregar gasto</button>
+            </div>
+        }
+        else
+        {
+            <div style="overflow-x:auto">
+                <table class="fin-table" id="tablaGastos">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Monto</th>
+                            <th>Descripción</th>
+                            <th>Fecha</th>
+                            <th style="text-align:right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var g in Model.Gastos)
+                        {
+                            <tr>
+                                <td class="td-id">@g.Id</td>
+                                <td class="td-monto">S/. @g.Monto.ToString("N2")</td>
+                                <td>@g.Descripcion</td>
+                                <td class="td-fecha">@g.CreadoEn.ToString("dd/MM/yyyy")</td>
+                                <td class="td-acc">
+                                    <button onclick="abrirVerGasto(@g.Id,'@g.Monto.ToString(System.Globalization.CultureInfo.InvariantCulture)','@g.Descripcion','@g.CreadoEn.ToString("dd/MM/yyyy")')" class="btn-tbl">Ver</button>
+                                    <button onclick="abrirEditarGasto(@g.Id,@g.Monto.ToString(System.Globalization.CultureInfo.InvariantCulture),'@g.Descripcion')" class="btn-tbl">Editar</button>
+                                    <button onclick="abrirBorrarGasto(@g.Id)" class="btn-tbl">Eliminar</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="fin-stats">
+                <div class="fin-stat s-total">
+                    <div class="fin-stat-lbl">Total</div>
+                    <div class="fin-stat-val">@Model.Gastos.Count()</div>
+                </div>
+                <div class="fin-stat s-monto">
+                    <div class="fin-stat-lbl">Monto total</div>
+                    <div class="fin-stat-val">S/. @Model.Gastos.Sum(g => g.Monto).ToString("N2")</div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ══ MODALES PAGO ══ -->
+
+<!-- Crear Pago -->
+<div class="m-overlay" id="mCrearPago">
+    <div class="m-box">
+        <div class="m-head" style="border-top:3px solid var(--fin-navy);border-radius:14px 14px 0 0">
+            <h3>Agregar pago</h3>
+            <button class="m-x" onclick="cerrar('mCrearPago')">✕</button>
+        </div>
+        <form action="/Pagos/Guardar" method="post">
+            <div class="m-body">
+                <div>
+                    <label class="m-lbl">Monto</label>
+                    <div class="pfx-row">
+                        <span class="pfx">S/.</span>
+                        <input name="Monto" class="m-input" type="number" step="0.01" min="0.01" placeholder="0.00" required />
+                    </div>
+                </div>
+                <div>
+                    <label class="m-lbl">Estado</label>
+                    <div class="est-row">
+                        <div class="est-opt est-pend">
+                            <input type="radio" name="Estado" value="Pendiente" id="cp_pend" checked />
+                            <label for="cp_pend">Pendiente</label>
+                        </div>
+                        <div class="est-opt est-apro">
+                            <input type="radio" name="Estado" value="Aprobado" id="cp_apro" />
+                            <label for="cp_apro">Aprobado</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="m-foot">
+                <button type="button" onclick="cerrar('mCrearPago')" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-navy">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Ver Pago -->
+<div class="m-overlay" id="mVerPago">
+    <div class="m-box">
+        <div class="m-head" style="border-top:3px solid var(--fin-light);border-radius:14px 14px 0 0">
+            <h3>Detalle del pago</h3>
+            <button class="m-x" onclick="cerrar('mVerPago')">✕</button>
+        </div>
+        <div style="margin:1rem;border:1px solid var(--fin-border);border-radius:8px;overflow:hidden">
+            <div class="d-row"><span class="d-key">ID</span><span class="d-val" id="vp_id"></span></div>
+            <div class="d-row"><span class="d-key">Monto</span><span class="d-val monto" id="vp_monto"></span></div>
+            <div class="d-row"><span class="d-key">Estado</span><span class="d-val" id="vp_estado"></span></div>
+            <div class="d-row"><span class="d-key">Fecha</span><span class="d-val" id="vp_fecha"></span></div>
+        </div>
+        <div class="m-foot">
+            <button type="button" onclick="cerrar('mVerPago')" class="btn-cancel">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Editar Pago -->
+<div class="m-overlay" id="mEditarPago">
+    <div class="m-box">
+        <div class="m-head" style="border-top:3px solid var(--fin-blue);border-radius:14px 14px 0 0">
+            <h3>Editar pago</h3>
+            <button class="m-x" onclick="cerrar('mEditarPago')">✕</button>
+        </div>
+        <form action="/Pagos/Actualizar" method="post">
+            <input type="hidden" name="Id" id="ep_id" />
+            <div class="m-body">
+                <div>
+                    <label class="m-lbl">Monto</label>
+                    <div class="pfx-row">
+                        <span class="pfx">S/.</span>
+                        <input name="Monto" id="ep_monto" class="m-input" type="number" step="0.01" min="0.01" required />
+                    </div>
+                </div>
+                <div>
+                    <label class="m-lbl">Estado</label>
+                    <div class="est-row">
+                        <div class="est-opt est-pend">
+                            <input type="radio" name="Estado" value="Pendiente" id="ep_pend" />
+                            <label for="ep_pend">Pendiente</label>
+                        </div>
+                        <div class="est-opt est-apro">
+                            <input type="radio" name="Estado" value="Aprobado" id="ep_apro" />
+                            <label for="ep_apro">Aprobado</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="m-foot">
+                <button type="button" onclick="cerrar('mEditarPago')" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-navy">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Eliminar Pago -->
+<div class="m-overlay" id="mBorrarPago">
+    <div class="m-box">
+        <div class="m-head" style="border-top:3px solid var(--fin-red);border-radius:14px 14px 0 0">
+            <h3>Confirmar eliminación</h3>
+            <button class="m-x" onclick="cerrar('mBorrarPago')">✕</button>
+        </div>
+        <div class="m-body">
+            <p style="color:var(--fin-text);margin:0;font-size:.93rem">
+                ¿Está seguro de eliminar el pago <strong id="bp_desc" style="color:var(--fin-navy)"></strong>?
+            </p>
+        </div>
+        <form action="/Pagos/Borrar" method="post">
+            <input type="hidden" name="Id" id="bp_id" />
+            <div class="m-foot">
+                <button type="button" onclick="cerrar('mBorrarPago')" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-del">Eliminar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ══ MODALES GASTO ══ -->
+
+<!-- Crear Gasto -->
+<div class="m-overlay" id="mCrearGasto">
+    <div class="m-box">
+        <div class="m-head" style="border-top:3px solid var(--fin-navy);border-radius:14px 14px 0 0">
+            <h3>Agregar gasto</h3>
+            <button class="m-x" onclick="cerrar('mCrearGasto')">✕</button>
+        </div>
+        <form action="/Gastos/Guardar" method="post">
+            <div class="m-body">
+                <div>
+                    <label class="m-lbl">Monto</label>
+                    <div class="pfx-row">
+                        <span class="pfx">S/.</span>
+                        <input name="Monto" class="m-input" type="number" step="0.01" min="0.01" placeholder="0.00" required />
+                    </div>
+                </div>
+                <div>
+                    <label class="m-lbl">Descripción</label>
+                    <input name="Descripcion" class="m-input" type="text" placeholder="Ej: Alquiler oficina" required />
+                </div>
+            </div>
+            <div class="m-foot">
+                <button type="button" onclick="cerrar('mCrearGasto')" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-navy">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Ver Gasto -->
+<div class="m-overlay" id="mVerGasto">
+    <div class="m-box">
+        <div class="m-head" style="border-top:3px solid var(--fin-light);border-radius:14px 14px 0 0">
+            <h3>Detalle del gasto</h3>
+            <button class="m-x" onclick="cerrar('mVerGasto')">✕</button>
+        </div>
+        <div style="margin:1rem;border:1px solid var(--fin-border);border-radius:8px;overflow:hidden">
+            <div class="d-row"><span class="d-key">ID</span><span class="d-val" id="vg_id"></span></div>
+            <div class="d-row"><span class="d-key">Monto</span><span class="d-val monto" id="vg_monto"></span></div>
+            <div class="d-row"><span class="d-key">Descripción</span><span class="d-val" id="vg_desc"></span></div>
+            <div class="d-row"><span class="d-key">Fecha</span><span class="d-val" id="vg_fecha"></span></div>
+        </div>
+        <div class="m-foot">
+            <button type="button" onclick="cerrar('mVerGasto')" class="btn-cancel">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Editar Gasto -->
+<div class="m-overlay" id="mEditarGasto">
+    <div class="m-box">
+        <div class="m-head" style="border-top:3px solid var(--fin-blue);border-radius:14px 14px 0 0">
+            <h3>Editar gasto</h3>
+            <button class="m-x" onclick="cerrar('mEditarGasto')">✕</button>
+        </div>
+        <form action="/Gastos/Actualizar" method="post">
+            <input type="hidden" name="Id" id="eg_id" />
+            <div class="m-body">
+                <div>
+                    <label class="m-lbl">Monto</label>
+                    <div class="pfx-row">
+                        <span class="pfx">S/.</span>
+                        <input name="Monto" id="eg_monto" class="m-input" type="number" step="0.01" min="0.01" required />
+                    </div>
+                </div>
+                <div>
+                    <label class="m-lbl">Descripción</label>
+                    <input name="Descripcion" id="eg_desc" class="m-input" type="text" required />
+                </div>
+            </div>
+            <div class="m-foot">
+                <button type="button" onclick="cerrar('mEditarGasto')" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-navy">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Eliminar Gasto -->
+<div class="m-overlay" id="mBorrarGasto">
+    <div class="m-box">
+        <div class="m-head" style="border-top:3px solid var(--fin-red);border-radius:14px 14px 0 0">
+            <h3>Confirmar eliminación</h3>
+            <button class="m-x" onclick="cerrar('mBorrarGasto')">✕</button>
+        </div>
+        <div class="m-body">
+            <p style="color:var(--fin-text);margin:0;font-size:.93rem">
+                ¿Está seguro de eliminar el gasto <strong id="bg_desc" style="color:var(--fin-navy)"></strong>?
+            </p>
+        </div>
+        <form action="/Gastos/Borrar" method="post">
+            <input type="hidden" name="Id" id="bg_id" />
+            <div class="m-foot">
+                <button type="button" onclick="cerrar('mBorrarGasto')" class="btn-cancel">Cancelar</button>
+                <button type="submit" class="btn-del">Eliminar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+let seccionActual = 'pagos';
+
+function cerrar(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.m-overlay').forEach(m => {
+    m.addEventListener('click', e => { if (e.target === m) cerrar(m.id); });
+});
+
+function setNav(btn, seccion) {
+    document.querySelectorAll('.fin-nav-item').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    seccionActual = seccion;
+
+    document.getElementById('seccionPagos').style.display  = seccion === 'pagos'  ? '' : 'none';
+    document.getElementById('seccionGastos').style.display = seccion === 'gastos' ? '' : 'none';
+
+    // Mostrar buscador solo en Pagos
+    document.getElementById('wrapBuscador').style.display = seccion === 'pagos' ? '' : 'none';
+
+    const titulo  = seccion === 'pagos' ? 'Gestión de Pagos'  : 'Gestión de Gastos';
+    const subtit  = seccion === 'pagos'
+        ? 'Administra tus pagos y su estado de aprobación'
+        : 'Administra tus gastos registrados';
+    document.getElementById('headerTitle').textContent = titulo;
+    document.getElementById('headerSub').textContent   = subtit;
+    document.getElementById('btnAgregar').textContent  = seccion === 'pagos' ? 'Agregar pago' : 'Agregar gasto';
+
+    document.getElementById('buscadorEstado').value = '';
+    document.getElementById('resultCount').textContent = '';
+}
+
+function abrirCrear() {
+    if (seccionActual === 'gastos') abrirCrearGasto();
+    else document.getElementById('mCrearPago').classList.add('open');
+}
+
+/* ── Pagos ── */
+function abrirVerPago(id, monto, estado, fecha) {
+    document.getElementById('vp_id').textContent    = id;
+    document.getElementById('vp_monto').textContent = 'S/. ' + parseFloat(monto).toFixed(2);
+    document.getElementById('vp_fecha').textContent = fecha;
+    const el = document.getElementById('vp_estado');
+    el.innerHTML = estado === 'Aprobado'
+        ? '<span class="badge-apro">Aprobado</span>'
+        : '<span class="badge-pend">Pendiente</span>';
+    document.getElementById('mVerPago').classList.add('open');
+}
+function abrirEditarPago(id, monto, estado) {
+    document.getElementById('ep_id').value    = id;
+    document.getElementById('ep_monto').value = monto;
+    const r = document.querySelector('#mEditarPago input[name="Estado"][value="' + estado + '"]');
+    if (r) r.checked = true;
+    document.getElementById('mEditarPago').classList.add('open');
+}
+function abrirBorrarPago(id) {
+    document.getElementById('bp_id').value        = id;
+    document.getElementById('bp_desc').textContent = id;
+    document.getElementById('mBorrarPago').classList.add('open');
+}
+
+/* ── Gastos ── */
+function abrirCrearGasto() { document.getElementById('mCrearGasto').classList.add('open'); }
+function abrirVerGasto(id, monto, desc, fecha) {
+    document.getElementById('vg_id').textContent    = id;
+    document.getElementById('vg_monto').textContent = 'S/. ' + parseFloat(monto).toFixed(2);
+    document.getElementById('vg_desc').textContent  = desc;
+    document.getElementById('vg_fecha').textContent = fecha;
+    document.getElementById('mVerGasto').classList.add('open');
+}
+function abrirEditarGasto(id, monto, desc) {
+    document.getElementById('eg_id').value    = id;
+    document.getElementById('eg_monto').value = monto;
+    document.getElementById('eg_desc').value  = desc;
+    document.getElementById('mEditarGasto').classList.add('open');
+}
+function abrirBorrarGasto(id) {
+    document.getElementById('bg_id').value         = id;
+    document.getElementById('bg_desc').textContent = id;
+    document.getElementById('mBorrarGasto').classList.add('open');
+}
+// Restaurar sección activa tras redirect
+const seccionInicial = '@(TempData["Seccion"]?.ToString() ?? "pagos")';
+if (seccionInicial === 'gastos') {
+    const btnGastos = document.querySelector('.fin-nav-item:last-child');
+    if (btnGastos) setNav(btnGastos, 'gastos');
+}
+
+function buscarEstado(q) {
+    const term = q.trim().toLowerCase();
+    let visible = 0;
+    const tabla = seccionActual === 'pagos' ? '#tablaPagos tbody tr' : '#tablaGastos tbody tr';
+    document.querySelectorAll(tabla).forEach(tr => {
+        const texto = tr.textContent.toLowerCase();
+        const show  = term === '' || texto.includes(term);
+        tr.style.display = show ? '' : 'none';
+        if (show) visible++;
+    });
+    const el = document.getElementById('resultCount');
+    if (el) el.textContent = term ? visible + ' resultado(s)' : '';
+}
+</script>

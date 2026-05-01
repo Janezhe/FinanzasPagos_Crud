@@ -1,0 +1,54 @@
+﻿@model FinanzasPagos_Crud.Models.Pago
+@using FinanzasPagos_Crud.Models
+@{
+    ViewData["Title"] = "Detalle Pago #" + Model.Id;
+}
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Detalle del Pago</h1>
+        <p class="page-subtitle">Información del registro <strong>#@Model.Id</strong></p>
+    </div>
+    <a asp-action="Index" class="btn-fp-ghost">← Volver</a>
+</div>
+
+<div style="display:flex;justify-content:center">
+    <div class="fp-card accent-detalle" style="width:100%;max-width:480px">
+        <div class="fp-card-header">
+            <span class="fp-card-icon">📄</span>
+            <h2>Pago <small>#@Model.Id</small></h2>
+        </div>
+        <div class="fp-detalle" style="margin-top:1.2rem">
+            <div class="fp-detalle-row">
+                <span class="fp-detalle-key">ID</span>
+                <span class="fp-detalle-val">#@Model.Id</span>
+            </div>
+            <div class="fp-detalle-row">
+                <span class="fp-detalle-key">Monto</span>
+                <span class="fp-detalle-val monto">S/. @Model.Monto.ToString("N2")</span>
+            </div>
+            <div class="fp-detalle-row">
+                <span class="fp-detalle-key">Estado</span>
+                <span class="fp-detalle-val">
+                    @if (Model.Estado == EstadoPago.Aprobado)
+                    {
+                        <span class="fp-badge fp-badge-aprobado">Aprobado</span>
+                    }
+                    else
+                    {
+                        <span class="fp-badge fp-badge-pendiente">Pendiente</span>
+                    }
+                </span>
+            </div>
+            <div class="fp-detalle-row">
+                <span class="fp-detalle-key">Registrado</span>
+                <span class="fp-detalle-val">@Model.CreadoEn.ToString("dd/MM/yyyy HH:mm")</span>
+            </div>
+        </div>
+        <div class="fp-form-actions">
+            <a asp-action="Index" class="btn-fp-ghost">← Volver</a>
+            <a asp-action="Editar" asp-route-id="@Model.Id" class="btn-fp-warning">Editar</a>
+            <a asp-action="Eliminar" asp-route-id="@Model.Id" class="btn-fp-danger">Eliminar</a>
+        </div>
+    </div>
+</div>
