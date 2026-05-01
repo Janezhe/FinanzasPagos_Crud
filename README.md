@@ -85,9 +85,6 @@ Herramientas → Administrador de paquetes NuGet → Consola del Administrador d
 Add-Migration Inicial
 Update-Database
 ```
-
-> Usa siempre la Consola del Administrador de paquetes (NuGet), no el Developer PowerShell ni CMD.
-
 ## 7. Capturas de pantalla
 
 ## Pagos
